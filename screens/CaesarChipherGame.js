@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import {
   TextInput,
   Button,
@@ -6,13 +6,15 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ImageBackground
+  ImageBackground,
+  Animated
 } from 'react-native';
 import caesarCipher from './caesarCipher';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
+
 const menuBg = require('../assets/gameBg.png');
 
 function CaesarCipherGame() {
@@ -22,6 +24,22 @@ function CaesarCipherGame() {
   const [word, setWord] = useState(getRandomWord());
   const [encryptedWord, setEncryptedWord] = useState(caesarCipher(word, shift));
   const navigation = useNavigation();
+  const animation = useRef(new Animated.Value(0)).current;
+  const [shakeAnimation] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    Animated.spring(animation, {
+      toValue: 1,
+      friction: 4,
+      useNativeDriver: true,
+    }).start();
+  }, [animation]);
+
+  const translateY = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-50, 0],
+  });
+  
 
   const onSignOut = () => {
     signOut(auth).catch((error) => console.log('Error logging out: ', error));
@@ -65,8 +83,23 @@ function CaesarCipherGame() {
       setMessage('You guessed correctly!');
     } else {
       setMessage("Sorry, that's not the right answer. Try again!");
+
+      // Trigger shake animation
+      Animated.sequence([
+        Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(shakeAnimation, { toValue: -10, duration: 100, useNativeDriver: true }),
+        Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(shakeAnimation, { toValue: 0, duration: 100, useNativeDriver: true })
+      ]).start();
     }
   }
+
+  // Apply shake animation to the view
+  const animatedStyle = {
+    transform: [
+    { translateX: shakeAnimation }
+    ]
+  };
 
   // Generate a new encrypted word and shift value
   function generateNewWord() {
@@ -85,10 +118,11 @@ function CaesarCipherGame() {
     <View style={styles.container}>
       <ImageBackground source={menuBg} style={styles.backImage}>
         <Text style={styles.title}>Aikaa jäljellä</Text>
-        <View style={styles.container}>
-          <Text
-            style={styles.text}
-          >{`Murrettava sana on ${encryptedWord}`}</Text>
+        <Animated.View style={[styles.animationContainer, animatedStyle]}>
+              <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
+                <Text style={styles.text}>Murrettava sana on</Text>
+                <Text style={styles.animatedText}>{encryptedWord}</Text>
+              </Animated.View>
           <TextInput
             style={styles.input}
             placeholder="Ciphered Word"
@@ -96,12 +130,7 @@ function CaesarCipherGame() {
             onChangeText={setGuess}
           />
           <Button title="Murra" onPress={handleSubmit} />
-          <Text style={styles.text}>{message}</Text>
-          <TouchableOpacity style={styles.button} onPress={generateNewWord}>
-            <Text style={styles.buttonText}>New Game</Text>
-          </TouchableOpacity>
-          <Text style={styles.text}>{word}</Text>
-        </View>
+        </Animated.View>
       </ImageBackground>
     </View>
   );
@@ -129,6 +158,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  animatedText: {
+    fontSize: 44,
+    fontWeight: "bold",
+    color: "white",
+  },
   input: {
     height: 40,
     width: '80%',
@@ -145,9 +179,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#007bff',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 4,
+    borderRadius: 10,
     marginTop: 10,
-    width: 100,
+    width: 150,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -160,6 +194,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover'
+  },
+  animationContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 
