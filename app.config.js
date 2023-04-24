@@ -1,31 +1,29 @@
 import 'dotenv/config';
-export default{
-  "expo": {
-    "name": "anocom",
-    "slug": "anocom",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+export default {
+  expo: {
+    name: 'anocom',
+    slug: 'anocom',
+    version: '1.0.0',
+    orientation: 'portrait',
+    icon: './assets/icon.png',
+    userInterfaceStyle: 'light',
+    splash: {
+      image: './assets/splash.png',
+      resizeMode: 'contain',
+      backgroundColor: '#ffffff'
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
+    assetBundlePatterns: ['**/*'],
+    ios: {
+      supportsTablet: true
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+    android: {
+      adaptiveIcon: {
+        foregroundImage: './assets/adaptive-icon.png',
+        backgroundColor: '#ffffff'
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    web: {
+      favicon: './assets/favicon.png'
     },
     extra: {
       apiKey: process.env.API_KEY,
@@ -37,4 +35,4 @@ export default{
       measurementId: process.env.MEASUREMENT_ID
     }
   }
-}
+};

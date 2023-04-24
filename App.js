@@ -14,7 +14,7 @@ const AuthenticatedUserContext = createContext({});
 
 const AuthenticatedUserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-return (
+  return (
     <AuthenticatedUserContext.Provider value={{ user, setUser }}>
       {children}
     </AuthenticatedUserContext.Provider>
@@ -23,9 +23,17 @@ return (
 
 function CipherStack() {
   return (
-    <Stack.Navigator defaultScreenOptions={Home} >
-      <Stack.Screen name='Home' component={Home} options={{headerStyle: {backgroundColor: 'black'}}}/>
-      <Stack.Screen name='CaesarCipherGame' component={CaesarCipherGame} options={{headerStyle: {backgroundColor: 'black'}}}/>
+    <Stack.Navigator defaultScreenOptions={Home}>
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{ headerStyle: { backgroundColor: 'black' } }}
+      />
+      <Stack.Screen
+        name="CaesarCipherGame"
+        component={CaesarCipherGame}
+        options={{ headerStyle: { backgroundColor: 'black' } }}
+      />
     </Stack.Navigator>
   );
 }
@@ -33,8 +41,8 @@ function CipherStack() {
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='Login' component={Login} />
-      <Stack.Screen name='Signup' component={Signup} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Signup" component={Signup} />
     </Stack.Navigator>
   );
 }
@@ -42,27 +50,27 @@ function AuthStack() {
 function RootNavigator() {
   const { user, setUser } = useContext(AuthenticatedUserContext);
   const [isLoading, setIsLoading] = useState(true);
-useEffect(() => {
+  useEffect(() => {
     // onAuthStateChanged returns an unsubscriber
     const unsubscribeAuth = onAuthStateChanged(
       auth,
-      async authenticatedUser => {
+      async (authenticatedUser) => {
         authenticatedUser ? setUser(authenticatedUser) : setUser(null);
         setIsLoading(false);
       }
     );
-// unsubscribe auth listener on unmount
+    // unsubscribe auth listener on unmount
     return unsubscribeAuth;
   }, [user]);
-if (isLoading) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
 
-return (
+  return (
     <NavigationContainer>
       {user ? <CipherStack /> : <AuthStack />}
     </NavigationContainer>

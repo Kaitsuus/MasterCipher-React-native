@@ -1,9 +1,8 @@
-
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
-import { getAnalytics } from "firebase/analytics";
-import constants from "expo-constants";
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from 'firebase/analytics';
+import constants from 'expo-constants';
 
 const firebaseConfig = {
   apiKey: constants.manifest.extra.apiKey,
