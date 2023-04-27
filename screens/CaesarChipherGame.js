@@ -7,17 +7,20 @@ import {
   View,
   TouchableOpacity,
   ImageBackground,
-  Animated
+  Animated,
+  Modal
 } from 'react-native';
 import caesarCipher from './caesarCipher';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import Timer from '../src/components/Timer';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 
 const menuBg = require('../assets/gameBg.png');
 
 function CaesarCipherGame() {
+  const [gameOver, setGameOver] = useState(false);
   const [guess, setGuess] = useState('');
   const [message, setMessage] = useState('');
   const [shift, setShift] = useState(Math.floor(Math.random() * 25) + 1);
@@ -78,6 +81,14 @@ function CaesarCipherGame() {
     return words[randomIndex];
   }
 
+  function handleTimerEnd() {
+    setGameOver(true);
+  }
+
+  function resetGame() {
+    setGameOver(false);
+  }
+
   function handleSubmit() {
     if (guess.toUpperCase() === word) {
       setMessage('You guessed correctly!');
@@ -118,8 +129,10 @@ function CaesarCipherGame() {
     <View style={styles.container}>
       <ImageBackground source={menuBg} style={styles.backImage}>
         <Text style={styles.title}>Aikaa jäljellä</Text>
+        <Timer initialTime={60} onTimerEnd={handleTimerEnd} />
+        <View style={styles.gameContainer}>
         <Animated.View style={[styles.animationContainer, animatedStyle]}>
-              <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
+              <Animated.View style={[styles.animationContainer, { transform: [{ translateY }] }]}>
                 <Text style={styles.text}>Murrettava sana on</Text>
                 <Text style={styles.animatedText}>{encryptedWord}</Text>
               </Animated.View>
@@ -131,6 +144,13 @@ function CaesarCipherGame() {
           />
           <Button title="Murra" onPress={handleSubmit} />
         </Animated.View>
+        </View>
+        <Modal visible={gameOver}>
+        <View>
+          <Text>Game Over</Text>
+          <Button title="Try Again" onPress={resetGame} />
+        </View>
+      </Modal>
       </ImageBackground>
     </View>
   );
@@ -141,6 +161,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  gameContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 34,
@@ -196,11 +221,10 @@ const styles = StyleSheet.create({
     resizeMode: 'cover'
   },
   animationContainer: {
-    flex: 1,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 });
 
 export default CaesarCipherGame;
